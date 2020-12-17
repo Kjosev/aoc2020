@@ -19,15 +19,16 @@ def init_grid(lines, padding):
     for row in range(-padding, num_rows + padding + 1):
         for column in range(- padding, num_columns + padding + 1):
             for depth in range(-padding, padding + 1):
-                grid[(row, column, depth)] = {
-                    "active": False,
-                    "count_adjacenet_active": 0
-                }
+                for dim_4 in range(-padding, padding + 1):
+                    grid[(row, column, depth, dim_4)] = {
+                        "active": False,
+                        "count_adjacenet_active": 0
+                    }
 
     for row_idx, line in enumerate(lines):
         for col_idx, char in enumerate(line):
             if char == ACTIVE:
-                grid[(row_idx, col_idx, 0)]['active'] = True
+                grid[(row_idx, col_idx, 0, 0)]['active'] = True
 
     return grid
 
@@ -39,8 +40,8 @@ def run_cycle(grid):
 
 
 def count_adjacent_active(grid):
-    for (curr_row, curr_col, curr_depth), cube in grid.items():
-        adjecent_cubes = get_adjecent_cubes(grid, curr_row, curr_col, curr_depth)
+    for (curr_row, curr_col, curr_depth, curr_dim_4), cube in grid.items():
+        adjecent_cubes = get_adjecent_cubes(grid, curr_row, curr_col, curr_depth, curr_dim_4)
         active_count = count_active(adjecent_cubes)
         cube['count_adjacenet_active'] = active_count
 
@@ -51,14 +52,15 @@ def count_active(cubes):
     return sum([1 for cube in cubes if cube['active'] == True])
                     
 
-def get_adjecent_cubes(grid, curr_row, curr_col, curr_depth):
+def get_adjecent_cubes(grid, curr_row, curr_col, curr_depth, curr_dim_4):
     adjecent_cubes = []
     for row in range(curr_row - 1, curr_row + 2 ):
         for col in range(curr_col - 1, curr_col + 2 ):
             for depth in range(curr_depth - 1, curr_depth + 2 ):
-                if row == curr_row and col == curr_col and depth == curr_depth:
-                    continue
-                adjecent_cubes.append(grid.get((row, col, depth), None))
+                for dim_4 in range(curr_dim_4 - 1, curr_dim_4 + 2 ):
+                    if row == curr_row and col == curr_col and depth == curr_depth and dim_4 == curr_dim_4:
+                        continue
+                    adjecent_cubes.append(grid.get((row, col, depth, dim_4), None))
 
     return [cube for cube in adjecent_cubes if cube is not None] 
 
